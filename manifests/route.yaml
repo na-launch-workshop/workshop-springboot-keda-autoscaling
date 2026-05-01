@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: workshop-springboot-keda-autoscaling
+  labels:
+    app: workshop-springboot-keda-autoscaling
+    backstage.io/kubernetes-id: workshop-springboot-keda-autoscaling
+spec:
+  to:
+    kind: Service
+    name: workshop-springboot-keda-autoscaling
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

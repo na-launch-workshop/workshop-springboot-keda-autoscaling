@@ -1,0 +1,59 @@
+schemaVersion: 2.2.2
+metadata:
+  name: workshop-springboot-keda-autoscaling
+  version: 1.0.0
+  description: Event-Driven Autoscaling with KEDA and Kafka
+attributes:
+  che-editor: vscode
+components:
+  - name: tools
+    container:
+      image: image-registry.openshift-image-registry.svc:5000/openshift/udi-rhel9:latest
+      env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: kafka-kafka-bootstrap:9092
+        - name: KAFKA_TOPIC
+          value: keda-events
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+      cpuLimit: '2'
+      cpuRequest: '500m'
+      memoryLimit: '3Gi'
+      memoryRequest: '1Gi'
+      mountSources: true
+
+  - name: m2
+    volume:
+      size: 1G
+
+commands:
+  - id: produce
+    exec:
+      label: "1. Produce Messages (builds Kafka lag)"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: "mvn -q compile exec:java -Dexec.args=3000"
+      group:
+        kind: run
+        isDefault: false
+
+  - id: deploy
+    exec:
+      label: "2. Deploy Consumer (1 pod, no autoscaling)"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: "oc apply -f manifests/deployment.yaml -f manifests/service.yaml -f manifests/route.yaml && oc scale deployment/workshop-springboot-keda-autoscaling --replicas=1"
+      group:
+        kind: run
+        isDefault: false
+
+  - id: apply-scaledobject
+    exec:
+      label: "3. Apply ScaledObject"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: "oc apply -f manifests/scaledobject.yaml"
+      group:
+        kind: run
+        isDefault: true
