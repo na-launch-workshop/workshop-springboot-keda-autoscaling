@@ -1,21 +1,33 @@
-# Event-Driven Autoscaling with KEDA
+# 🚀 Module: Event-Driven Autoscaling with KEDA
+
+**Technology Stack:**
+
+- KEDA (Kubernetes Event-driven Autoscaling)
+- Spring Boot
+- Kafka
+
+---
+
+## 🎯 **Scenario**
 
 Spring Boot workshop demonstrating event-driven autoscaling with KEDA and Kafka.
 
-## What this lab shows
+## 🧩 **Challenge**
 
-- A Kafka topic (`keda-events`) that buffers work
-- A Spring Boot consumer that processes messages slowly (2.5s per message) to simulate backlog
-- How KEDA scales a deployment from 0 to N pods based on Kafka consumer lag
-- How tuning `ScaledObject` parameters changes drain time
+What this lab shows:
 
-## Flow
+- [ ] A Kafka topic (`keda-events`) that buffers work
+- [ ] A Spring Boot consumer that processes messages slowly (2.5s per message) to simulate backlog
+- [ ] How KEDA scales a deployment from 0 to N pods based on Kafka consumer lag
+- [ ] How tuning `ScaledObject` parameters changes drain time
+
+### Flow
 
 1. **Produce messages** — flood the `keda-events` topic with a large backlog
 2. **Deploy the consumer manually** — watch 1 pod drain slowly with no autoscaling
 3. **Create a ScaledObject** — hand KEDA control and watch it scale pods up/down automatically
 
-## Kafka UI
+### Kafka UI
 
 Monitor topic lag and consumer group activity in real time:
 
@@ -25,7 +37,7 @@ https://<kafka-ui-url>
 
 Go to **Consumer Groups → keda-consumer-group** to see lag per partition.
 
-## DevSpaces commands
+### DevSpaces commands
 
 | Command | What it does |
 |---|---|
@@ -33,7 +45,7 @@ Go to **Consumer Groups → keda-consumer-group** to see lag per partition.
 | 2. Deploy Consumer | Scales the consumer deployment to 1 pod (no autoscaling) |
 | 3. Apply ScaledObject | Applies `manifests/scaledobject.yaml` to enable KEDA autoscaling |
 
-## Creating the ScaledObject
+### Creating the ScaledObject
 
 Create `manifests/scaledobject.yaml` in DevSpaces with the following content.
 
@@ -64,7 +76,7 @@ spec:
 
 Then run **Apply ScaledObject** to deploy it.
 
-## Key ScaledObject parameters to experiment with
+### Key ScaledObject parameters to experiment with
 
 | Parameter | Effect |
 |---|---|
