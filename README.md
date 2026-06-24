@@ -1,5 +1,7 @@
 # 🚀 Module: Event-Driven Autoscaling with KEDA
 
+Scale based on real-time business demand with KEDA to improve resource efficiency and cost management.
+
 **Technology Stack:**
 
 - KEDA (Kubernetes Event-driven Autoscaling)
