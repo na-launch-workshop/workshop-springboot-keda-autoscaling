@@ -1,4 +1,4 @@
-schemaVersion: 2.2.2
+schemaVersion: 2.3.0
 metadata:
   name: workshop-springboot-keda-autoscaling
   version: 1.0.0
@@ -8,26 +8,49 @@ attributes:
 components:
   - name: tools
     container:
-      image: image-registry.openshift-image-registry.svc:5000/openshift/udi-rhel9:latest
+      image: image-registry.openshift-image-registry.svc:5000/workspace-images/fullstack-dev-tools:latest
       env:
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-kafka-bootstrap:9092
         - name: KAFKA_TOPIC
           value: keda-events
       volumeMounts:
+        # fullstack-dev-tools sets HOME=/projects, so Maven's cache is /projects/.m2
         - name: m2
-          path: /home/user/.m2
+          path: /projects/.m2
       cpuLimit: '2'
       cpuRequest: '500m'
       memoryLimit: '3Gi'
       memoryRequest: '1Gi'
       mountSources: true
-
   - name: m2
     volume:
       size: 1G
+  - name: prep-workspace
+    container:
+      image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+      command:
+        - /bin/bash
+      args:
+        - '-c'
+        - >-
+          mkdir -p /projects/.bin && cp /usr/bin/oc /projects/.bin/oc && cp /usr/bin/kubectl /projects/.bin/kubectl
+      mountSources: true
+      sourceMapping: /projects
+      memoryRequest: 128Mi
+      memoryLimit: 256Mi
+      cpuRequest: 10m
+      cpuLimit: 200m
+      env:
+        - name: HOME
+          value: "/projects"
 
 commands:
+  - id: prep-workspace
+    apply:
+      component: prep-workspace
+      label: Pre Start Prep
+
   - id: produce
     exec:
       label: "1. Produce Messages (builds Kafka lag)"
@@ -57,3 +80,7 @@ commands:
       group:
         kind: run
         isDefault: true
+
+events:
+  preStart:
+    - prep-workspace
