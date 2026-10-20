@@ -1,4 +1,4 @@
-site_name: Spring Boot Event-Driven Autoscaling with KEDA
+site_name: Event-Driven Autoscaling with KEDA - Java
 site_description: Scale a Spring Boot Kafka consumer from zero to many replicas automatically using KEDA
 
 nav:
